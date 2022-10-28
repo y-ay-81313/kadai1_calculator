@@ -11,25 +11,25 @@ class ViewController: UIViewController {
     
     let label = UILabel(frame: CGRect(x:40-10 , y: 150, width:300, height: 100))
     
-    let button1 = UIButton(frame: CGRect(x:30 , y: 570, width:70, height: 70))
-    let button2 = UIButton(frame: CGRect(x:110 , y: 570, width:70, height: 70))
-    let button3 = UIButton(frame: CGRect(x:190 , y: 570, width:70, height: 70))
-    let button4 = UIButton(frame: CGRect(x:30 , y: 480, width:70, height: 70))
-    let button5 = UIButton(frame: CGRect(x:110  , y: 480, width:70, height: 70))
-    let button6 = UIButton(frame: CGRect(x:190 , y: 480, width:70, height: 70))
-    let button7 = UIButton(frame: CGRect(x:30 , y: 390, width:70, height: 70))
-    let button8 = UIButton(frame: CGRect(x:110  , y: 390, width:70, height: 70))
-    let button9 = UIButton(frame: CGRect(x:190 , y: 390, width:70, height: 70))
-    let button0 = UIButton(frame: CGRect(x:30 , y: 660, width:145, height: 70))
+    let button1 = UIButton(frame: CGRect(x:30 , y: 480, width:70, height: 70))
+    let button2 = UIButton(frame: CGRect(x:110  , y: 480, width:70, height: 70))
+    let button3 = UIButton(frame: CGRect(x:190 , y: 480, width:70, height: 70))
+    let button4 = UIButton(frame: CGRect(x:30 , y: 390, width:70, height: 70))
+    let button5 = UIButton(frame: CGRect(x:110  , y: 390, width:70, height: 70))
+    let button6 = UIButton(frame: CGRect(x:190 , y: 390, width:70, height: 70))
+    let button7 = UIButton(frame: CGRect(x:30 , y: 300, width:70, height: 70))
+    let button8 = UIButton(frame: CGRect(x:110  , y: 300, width:70, height: 70))
+    let button9 = UIButton(frame: CGRect(x:190 , y: 300, width:70, height: 70))
+    let button0 = UIButton(frame: CGRect(x:30 , y: 570, width:70, height: 70))
         
-    let buttonAc = UIButton(frame: CGRect(x:30 , y: 300, width:70, height: 70))
+    let buttonAc = UIButton(frame: CGRect(x:190 , y: 570, width:70, height: 70))
     let buttonDivied = UIButton(frame: CGRect(x:270 , y: 300, width:70, height: 70))
     let buttonMultiple = UIButton(frame: CGRect(x:270 , y: 390, width:70, height: 70))
     let buttonMinus = UIButton(frame: CGRect(x:270 , y: 480, width:70, height: 70))
     let buttonPlus = UIButton(frame: CGRect(x:270 , y: 570, width:70, height: 70))
         
-    let buttonDot = UIButton(frame: CGRect(x:190 , y: 660, width:70, height: 70))
-    let buttonEqual = UIButton(frame: CGRect(x:270 , y: 660, width:70, height: 70))
+    let buttonDot = UIButton(frame: CGRect(x:110 , y: 570, width:70, height: 70))
+    let buttonEqual = UIButton(frame: CGRect(x:30 , y: 660, width:300, height: 70))
 
     var hugoBox: String?
     var box1: String?
