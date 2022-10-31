@@ -34,20 +34,32 @@ class ViewController: UIViewController {
     var hugoBox: String?
     var box1: String?
     var box2: String?
-    var count = 0
-
+    var isDecimalPoint = false
+    var isAfterHugo = false
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
         
-        //文字列を自動でサイズ変更させる
+        //文字列をある程度の桁数まで表示させる
         label.adjustsFontSizeToFitWidth = true
+        label.minimumScaleFactor = 0.5
         
         //電卓のボタン配置画面設定
         layout()
         
         //数字が押された際の処理をボタンに設定する
         setNumActions()
+        
+        //符号が押された際の処理をボタンに設定する
+        hugoAction()
+        
+        //小数点の「.」が押された際の処理
+        dotAction()
+        
+        //数値の計算をする処理
+        equalAction()
     }
     
     func layout() {
@@ -174,8 +186,14 @@ class ViewController: UIViewController {
     
     @objc func clickNum(_ button: UIButton) {
         
+        if isAfterHugo == true{
+            label.text = ""
+            isAfterHugo = false
+        }
+        
         let sentText = label.text!
         
+        //例えば、０の時に３を押すと０３じゃなくて３にする
         if label.text == "0" {
             label.text = button.currentTitle!
         }
@@ -198,6 +216,97 @@ class ViewController: UIViewController {
         button9.addTarget(self, action: #selector(clickNum(_:)), for: .touchUpInside)
 
     }
+    
+    //符号が押された時のボタンの色を変更する処理
+    @objc func clickHugo(_ sender: UIButton) {
+            
+        let arrayHugo = [buttonDivied,buttonMultiple,buttonPlus,buttonMinus]
+        hugoBox = sender.currentTitle!
+        
+        //現在押されていない符号を覚える
+        let newArray = arrayHugo.filter { $0.backgroundColor != .orange}
+        
+        //押されていた符号を元の色に変更する
+        for i in newArray {
+            i.backgroundColor = .orange
+            i.setTitleColor(.white, for: .normal)
+        }
+        
+        //押されている符号の色を変更する
+        sender.backgroundColor = .white
+        sender.setTitleColor(.orange, for: .normal)
+        isAfterHugo = true
+        box1 = label.text!
+        isDecimalPoint = false
+        
+    }
+        
+    func hugoAction() {
+            
+        buttonDivied.addTarget(self, action: #selector(clickHugo(_:)), for: .touchUpInside)
+        buttonMultiple.addTarget(self, action: #selector(clickHugo(_:)), for: .touchUpInside)
+        buttonPlus.addTarget(self, action: #selector(clickHugo(_:)), for: .touchUpInside)
+        buttonMinus.addTarget(self, action: #selector(clickHugo(_:)), for: .touchUpInside)
+            
+    }
+    
+    //小数点の「.」が押された際の処理
+    @objc func clickDot(_ sender: UIButton) {
+        
+        if isDecimalPoint == false {
+            //ラベルに整数が表示されてるときに、小数点ボタンを押すと、「.」をつける
+            label.text = label.text! + sender.currentTitle!
+        }
+        
+        isDecimalPoint = true
+        
+    }
+        
+    func dotAction() {
+        buttonDot.addTarget(self, action: #selector(clickDot(_:)), for: .touchUpInside)
+    }
+    
+    //数値の計算を行う処理
+    @objc func clickEqual(_ sender: UIButton) {
+
+        box2 = label.text!
+        
+        //符号が押される前の数値を覚える
+        let firstNum : NSDecimalNumber = NSDecimalNumber(string: box1)
+        //符号が押された後の数値を覚える
+        let secondNum : NSDecimalNumber = NSDecimalNumber(string: box2)
+        
+        if hugoBox != "" {
+            
+            switch hugoBox {
+                
+            //足し算の処理->adding
+            case "+":
+                let result: NSDecimalNumber = firstNum.adding(secondNum)
+                label.text = result.stringValue
+            //引き算の処理->subtracting
+            case "-":
+                let result: NSDecimalNumber = firstNum.subtracting(secondNum)
+                label.text = result.stringValue
+            //掛け算の処理->multiplying
+            case "×":
+                let result: NSDecimalNumber = firstNum.multiplying(by: secondNum)
+                label.text = result.stringValue
+            //割り算の処理->dividing
+            case "÷":
+                let result: NSDecimalNumber = firstNum.dividing(by:secondNum)
+                label.text = result.stringValue
+            default:
+                break
+             }
+        }
+    }
+        
+    func equalAction() {
+        buttonEqual.addTarget(self, action: #selector(clickEqual(_:)), for: .touchUpInside)
+    }
+    
+   //「.」とACと＝のときに、isAfterHugoをfalseに変える処理を忘れない！！
     
 }
 
