@@ -32,10 +32,10 @@ class ViewController: UIViewController {
     let buttonEqual = UIButton(frame: CGRect(x:30 , y: 660, width:300, height: 70))
 
     var hugoBox: String?
-    var box1: String?
-    var box2: String?
+    var firstNum: NSDecimalNumber?
     var isDecimalPoint = false
     var isAfterHugo = false
+    var isAfterEqual = false
     
     
     override func viewDidLoad() {
@@ -189,9 +189,16 @@ class ViewController: UIViewController {
     //各数字が押された際のラベルを表示する処理
     @objc func clickNum(_ button: UIButton) {
         
+        //符号が押された後だったら、表示されているラベルを消す
         if isAfterHugo == true{
             label.text = ""
             isAfterHugo = false
+        }
+        
+        //＝が押された後だったら、表示されているラベルを消す
+        else if isAfterEqual == true{
+            label.text = ""
+            isAfterEqual = false
         }
         
         let sentText = label.text!
@@ -223,25 +230,41 @@ class ViewController: UIViewController {
     //符号が押された時のボタンの色を変更する処理
     @objc func clickHugo(_ sender: UIButton) {
             
+        //####ボタンの色変更####
         let arrayHugo = [buttonDivied,buttonMultiple,buttonPlus,buttonMinus]
-        hugoBox = sender.currentTitle!
-        
         //現在押されていない符号を覚える
         let newArray = arrayHugo.filter { $0.backgroundColor != .orange}
-        
         //押されていた符号を元の色に変更する
         for i in newArray {
             i.backgroundColor = .orange
             i.setTitleColor(.white, for: .normal)
         }
-        
         //押されている符号の色を変更する
         sender.backgroundColor = .white
         sender.setTitleColor(.orange, for: .normal)
-        isAfterHugo = true
-        box1 = label.text!
-        isDecimalPoint = false
         
+        
+        //####計算用の処理####
+        
+        if isAfterHugo == false {
+            if firstNum == nil{
+                //通常時は、今labelに表示されてる値をfirstNumに入れる
+                firstNum = NSDecimalNumber(string: label.text!)
+            }
+            else{
+                //符号での計算が完了していない(「=」が押されていない)（firstNumが空になってない）場合
+                let secondNum = NSDecimalNumber(string: label.text!)
+                let result = firstNum!.adding(secondNum)
+                label.text = result.stringValue
+                firstNum = result
+                //計算を行って、計算結果をfirstNumに入れる
+            }
+        }
+
+        hugoBox = sender.currentTitle!
+        isAfterHugo = true
+        isDecimalPoint = false
+        isAfterEqual = false
     }
         
     func setHugoActions() {
@@ -256,14 +279,19 @@ class ViewController: UIViewController {
     //小数点の「.」が押された際の処理
     @objc func clickDot(_ sender: UIButton) {
         
-        if isDecimalPoint == false {
+        if isAfterHugo || isAfterEqual{
+            //符号の直後に「.」を押したら0.を表示させる
+            label.text = "0" + sender.currentTitle!
+        }
+        
+        else if isDecimalPoint == false {
             //ラベルに整数が表示されてるときに、小数点ボタンを押すと、「.」をつける
             label.text = label.text! + sender.currentTitle!
         }
         
         isDecimalPoint = true
         isAfterHugo = false
-        
+        isAfterEqual = false
     }
         
     func setDotActions() {
@@ -277,42 +305,40 @@ class ViewController: UIViewController {
         sender.backgroundColor = .orange
         sender.setTitleColor(.white, for:.normal)
         
-        if isAfterHugo == true{
+        if isAfterHugo == true || firstNum == nil{
             //符号のボタンが押された直後に＝が押されたら何もしない
             return
         }
-        
-        box2 = label.text!
-    
-        //符号が押される前の数値を覚える
-        let firstNum : NSDecimalNumber = NSDecimalNumber(string: box1)
+                
         //符号が押された後の数値を覚える
-        let secondNum : NSDecimalNumber = NSDecimalNumber(string: box2)
+        let secondNum = NSDecimalNumber(string: label.text!)
        
         if hugoBox != ""{
             
             switch hugoBox {
                 
-            //足し算の処理->adding
+                //足し算の処理->adding
             case "+":
-                let result: NSDecimalNumber = firstNum.adding(secondNum)
+                let result = firstNum!.adding(secondNum)
                 label.text = result.stringValue
-            //引き算の処理->subtracting
+                //引き算の処理->subtracting
             case "-":
-                let result: NSDecimalNumber = firstNum.subtracting(secondNum)
+                let result = firstNum!.subtracting(secondNum)
                 label.text = result.stringValue
-            //掛け算の処理->multiplying
+                //掛け算の処理->multiplying
             case "×":
-                let result: NSDecimalNumber = firstNum.multiplying(by: secondNum)
+                let result = firstNum!.multiplying(by: secondNum)
                 label.text = result.stringValue
-            //割り算の処理->dividing
+                //割り算の処理->dividing
             case "÷":
-                let result: NSDecimalNumber = firstNum.dividing(by:secondNum)
+                let result = firstNum!.dividing(by:secondNum)
                 label.text = result.stringValue
+                
             default:
+
                 break
-            }
-           
+
+        }
             //＝の計算をしたら、符号ボタンの色を元に戻す
             let arrayHugo = [buttonDivied, buttonMultiple, buttonPlus, buttonMinus]
             let newArray = arrayHugo.filter { $0.backgroundColor != .orange}
@@ -326,7 +352,8 @@ class ViewController: UIViewController {
             hugoBox = nil
             isAfterHugo = false
             isDecimalPoint = false
-            
+            firstNum = nil
+            isAfterEqual = true
         }
     }
     
@@ -353,6 +380,7 @@ class ViewController: UIViewController {
         label.text = "0"
         hugoBox = nil
         isDecimalPoint = false
+        firstNum = nil
         let arrayHugo = [buttonDivied, buttonMultiple, buttonPlus, buttonMinus]
         let newArray = arrayHugo.filter { $0.backgroundColor != .orange}
             
@@ -362,10 +390,13 @@ class ViewController: UIViewController {
         }
         
         isAfterHugo = false
+        isAfterEqual = false
     }
         
     func setAcActions() {
         buttonAc.addTarget(self, action: #selector(clickAc(_:)), for: .touchUpInside)
     }
 }
+
+
 
