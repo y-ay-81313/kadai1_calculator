@@ -53,13 +53,17 @@ class ViewController: UIViewController {
         setNumActions()
         
         //符号が押された際の処理をボタンに設定する
-        hugoAction()
+        setHugoActions()
         
-        //小数点の「.」が押された際の処理
-        dotAction()
+        //小数点の「.」が押された際の処理をボタンに設定する
+        setDotActions()
         
-        //数値の計算をする処理
-        equalAction()
+        //=が押された時の処理をボタンに設定する
+        setEqualActions()
+        
+        //クリアボタンが押された際の処理をボタンに設定する
+        setAcActions()
+        
     }
     
     func layout() {
@@ -183,7 +187,6 @@ class ViewController: UIViewController {
     }
     
     //各数字が押された際のラベルを表示する処理
-    
     @objc func clickNum(_ button: UIButton) {
         
         if isAfterHugo == true{
@@ -193,7 +196,7 @@ class ViewController: UIViewController {
         
         let sentText = label.text!
         
-        //例えば、０の時に３を押すと０３じゃなくて３にする
+        //例えば、0の時に3を押すと03じゃなくて3にする
         if label.text == "0" {
             label.text = button.currentTitle!
         }
@@ -241,7 +244,7 @@ class ViewController: UIViewController {
         
     }
         
-    func hugoAction() {
+    func setHugoActions() {
             
         buttonDivied.addTarget(self, action: #selector(clickHugo(_:)), for: .touchUpInside)
         buttonMultiple.addTarget(self, action: #selector(clickHugo(_:)), for: .touchUpInside)
@@ -259,24 +262,34 @@ class ViewController: UIViewController {
         }
         
         isDecimalPoint = true
+        isAfterHugo = false
         
     }
         
-    func dotAction() {
+    func setDotActions() {
         buttonDot.addTarget(self, action: #selector(clickDot(_:)), for: .touchUpInside)
     }
     
-    //数値の計算を行う処理
+    //＝が押された時の計算処理
     @objc func clickEqual(_ sender: UIButton) {
-
-        box2 = label.text!
         
+        //＝が押されたら＝ボタンの色を変える
+        sender.backgroundColor = .orange
+        sender.setTitleColor(.white, for:.normal)
+        
+        if isAfterHugo == true{
+            //符号のボタンが押された直後に＝が押されたら何もしない
+            return
+        }
+        
+        box2 = label.text!
+    
         //符号が押される前の数値を覚える
         let firstNum : NSDecimalNumber = NSDecimalNumber(string: box1)
         //符号が押された後の数値を覚える
         let secondNum : NSDecimalNumber = NSDecimalNumber(string: box2)
-        
-        if hugoBox != "" {
+       
+        if hugoBox != ""{
             
             switch hugoBox {
                 
@@ -298,15 +311,61 @@ class ViewController: UIViewController {
                 label.text = result.stringValue
             default:
                 break
-             }
+            }
+           
+            //＝の計算をしたら、符号ボタンの色を元に戻す
+            let arrayHugo = [buttonDivied, buttonMultiple, buttonPlus, buttonMinus]
+            let newArray = arrayHugo.filter { $0.backgroundColor != .orange}
+                
+            for i in newArray {
+                i.backgroundColor = .orange
+                i.setTitleColor(.white, for: .normal)
+            }
+            
+            //符号と小数点の情報をリセットする
+            hugoBox = nil
+            isAfterHugo = false
+            isDecimalPoint = false
+            
         }
     }
-        
-    func equalAction() {
-        buttonEqual.addTarget(self, action: #selector(clickEqual(_:)), for: .touchUpInside)
+    
+    //＝が押された時に色を変える
+    @objc func touchDownEqual(_ sender: UIButton) {
+        sender.backgroundColor = .white
+        sender.setTitleColor(.orange, for:.normal)
     }
     
-   //「.」とACと＝のときに、isAfterHugoをfalseに変える処理を忘れない！！
+    @objc func touchUpOutsideEqual(_ sender: UIButton) {
+        sender.backgroundColor = .orange
+        sender.setTitleColor(.white, for:.normal)
+    }
+        
+    func setEqualActions() {
+        buttonEqual.addTarget(self, action: #selector(clickEqual(_:)), for: .touchUpInside)
+        buttonEqual.addTarget(self, action: #selector(touchDownEqual(_:)), for: .touchDown)
+        buttonEqual.addTarget(self, action: #selector(touchUpOutsideEqual(_:)), for: .touchUpOutside)
+    }
     
+    //ACボタンが押された時の処理
+    @objc func clickAc(_ sender: UIButton) {
+        
+        label.text = "0"
+        hugoBox = nil
+        isDecimalPoint = false
+        let arrayHugo = [buttonDivied, buttonMultiple, buttonPlus, buttonMinus]
+        let newArray = arrayHugo.filter { $0.backgroundColor != .orange}
+            
+        for i in newArray {
+            i.backgroundColor = .orange
+            i.setTitleColor(.white, for: .normal)
+        }
+        
+        isAfterHugo = false
+    }
+        
+    func setAcActions() {
+        buttonAc.addTarget(self, action: #selector(clickAc(_:)), for: .touchUpInside)
+    }
 }
 
