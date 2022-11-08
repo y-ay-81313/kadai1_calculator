@@ -109,6 +109,12 @@ class ViewController: UIViewController {
     
     //各数字が押された際のラベルを表示する処理
     @objc func clickNum(_ button: UIButton) {
+        
+        //firstNumがnilだったら、計算直後なので状態をリセットする
+        if firstNum == nil{
+            reset()
+        }
+        
         //例えば、0の時に3を押すと03じゃなくて3にする
         if goukeilabel.text == "0" {
             goukeilabel.text = button.currentTitle!
@@ -130,6 +136,10 @@ class ViewController: UIViewController {
     //符号が押された時の処理
     @objc func clickHugo(_ sender: UIButton) {
         
+        if firstNum == nil{
+            firstNum = NSDecimalNumber(string: goukeilabel.text!)
+        }
+        
         //連続で計算が行われた時の処理
         if secondNum != nil {
             var result = keisan()
@@ -146,7 +156,10 @@ class ViewController: UIViewController {
     
     //小数点の「.」が押された際の処理
     @objc func clickDot(_ sender: UIButton) {
-        
+       //firstNumがnilだったら、計算直後なので状態をリセットする
+        if firstNum == nil{
+            reset()
+        }
         //.が押されていたら何もしない
         if isDot == true{
             return
@@ -162,7 +175,10 @@ class ViewController: UIViewController {
         var result =  keisan()
         goukeilabel.text = result.stringValue
         keisanlabel.text = ""
-        
+        firstNum = nil
+        secondNum = nil
+        hugoBox = nil
+        isDot = false
     }
     
     //ACボタンが押された時の処理
@@ -200,7 +216,7 @@ class ViewController: UIViewController {
         default:
             break
         }
-        
+        //※符号が押されていない時の=は0になる
         return result
     }
     
