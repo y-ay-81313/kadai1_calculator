@@ -171,14 +171,19 @@ class ViewController: UIViewController {
     
     //＝が押された時の計算処理
     @objc func clickEqual(_ sender: UIButton) {
-       
-        var result =  keisan()
-        goukeilabel.text = result.stringValue
-        keisanlabel.text = ""
-        firstNum = nil
-        secondNum = nil
-        hugoBox = nil
-        isDot = false
+        //firstNumがnilだったら、計算直後なので状態をリセットする
+         if firstNum == nil{
+             reset()
+         }
+        else{
+            var result =  keisan()
+            goukeilabel.text = result.stringValue
+            keisanlabel.text = ""
+            firstNum = nil
+            secondNum = nil
+            hugoBox = nil
+            isDot = false
+        }
     }
     
     //ACボタンが押された時の処理
